@@ -32,6 +32,11 @@ const ContactForm = ({ userId }) => {
         setContact((a) => ({ ...a, address}));
     };
 
+    const handleBirthday = (event) => {
+        const name = event.target.value;
+        setContact((n) => ({ ...n, name }));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
     }
