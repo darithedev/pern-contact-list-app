@@ -33,11 +33,15 @@ describe('Contact Form Component', () => {
     });
 
     test('address input field exists', () => {
-
+        render(<ContactForm />)
+        const addressInput = screen.getByLabelText(/add address/i);
+        expect(addressInput).toBeInTheDocument();
     });
 
     test('birthday input field exists', () => {
-
+        render(<ContactForm />)
+        const birthdayInput = screen.getByLabelText(/add birthday/i);
+        expect(birthdayInput).toBeInTheDocument();
     });
 
     test('submit button exists', () => {
