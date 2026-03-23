@@ -45,7 +45,9 @@ describe('Contact Form Component', () => {
     });
 
     test('submit button exists', () => {
-
+        render(<ContactForm />);
+        const submitButton = screen.getByRole('button', { name: /submit/i });
+        expect(submitButton).toBeInTheDocument();
     });
 
     test('user can add input to contact form for required fields', async () => {
