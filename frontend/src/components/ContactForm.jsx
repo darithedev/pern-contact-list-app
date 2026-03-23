@@ -22,6 +22,11 @@ const ContactForm = ({ userId }) => {
         setContact((em) => ({ ...em, email}));
     };
 
+    const handlePhoneNumber = (event) => {
+        const phone_number = event.target.value;
+        setContact((num) => ({ ...num, phone_number }));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
     }
