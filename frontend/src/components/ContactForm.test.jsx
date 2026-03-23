@@ -21,11 +21,15 @@ describe('Contact Form Component', () => {
     });
 
     test('email input field exists', () => {
-
+        render(<ContactForm />)
+        const emailInput = screen.getByLabelText(/add email/i);
+        expect(emailInput).toBeInTheDocument();
     });
 
     test('phone number input field exists', () => {
-
+        render(<ContactForm />)
+        const phoneNumber = screen.getByLabelText(/add phone number/i);
+        expect(phoneNumber).toBeInTheDocument();
     });
 
     test('address input field exists', () => {
