@@ -27,6 +27,11 @@ const ContactForm = ({ userId }) => {
         setContact((num) => ({ ...num, phone_number }));
     };
 
+    const handleAddress = (event) => {
+        const address = event.target.value;
+        setContact((a) => ({ ...a, address}));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
     }
