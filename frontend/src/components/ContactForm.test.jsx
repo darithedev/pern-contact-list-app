@@ -15,7 +15,9 @@ describe('Contact Form Component', () => {
     });
 
     test('name input field exists', () => {
-
+        render(<ContactForm />)
+        const nameInput = screen.getByLabelText(/name/i);
+        expect(nameInput).toBeInTheDocument();
     });
 
     test('email input field exists', () => {
