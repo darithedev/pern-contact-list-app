@@ -17,6 +17,11 @@ const ContactForm = ({ userId }) => {
         setContact((n) => ({ ...n, name }));
     };
 
+    const handleEmail = (event) => {
+        const email = event.target.value;
+        setContact((em) => ({ ...em, email}));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
     }
