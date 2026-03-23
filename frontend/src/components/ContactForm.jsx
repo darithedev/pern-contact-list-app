@@ -37,6 +37,23 @@ const ContactForm = ({ userId }) => {
         setContact((n) => ({ ...n, name }));
     };
 
+    const handleNotes = (event) => {
+        const notes = event.target.value;
+        setContact((n) => ({ ...n, notes}));
+    };
+
+    const clearForm = () => {
+        setContact({ 
+            user_id: userId,
+            name: "",
+            email: "",
+            phone_number: "",
+            address: "",
+            birthday: "",
+            notes: "" 
+        });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
     }
