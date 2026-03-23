@@ -51,6 +51,14 @@ describe('Contact Form Component', () => {
     });
 
     test('user can add input to contact form for required fields', async () => {
+        render(<ContactForm />);
+        const nameInput = screen.getByLabelText(/name/i);
+        const phoneInput = screen.getByLabelText(/phone/i);
 
+        await userEvent.type(nameInput, 'Namey Name');
+        await userEvent.type(phoneInput, '231-456-9834');
+
+        expect(nameInput).toHaveValue('Namey Name');
+        expect(phoneInput).toHaveValue('231-456-9834');
     });
 });
