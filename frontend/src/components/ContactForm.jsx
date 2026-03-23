@@ -12,6 +12,11 @@ const ContactForm = ({ userId }) => {
         notes: ""
     });
 
+    const handleName = (event) => {
+        const name = event.target.value;
+        setContact((n) => ({ ...n, name }));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
     }
