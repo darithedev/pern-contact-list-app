@@ -46,7 +46,45 @@ router.post('/login', async(req, res) => {
 });
 
 router.post('/signup', async(req, res) => {
+    try {
+        const { name, phone_number, email, password } = req.body;
+        
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                error: "A valid name, email, and password is required to signup."
+            });
+        }
 
+        if (!email.includes('@')) {
+            return res.status(400).json({
+                error: "A valid email is required!"
+            });
+        }
+
+        if (typeof(phone_number) !== 'number') {
+            return res.status(400).json({
+                error: "A valid 10 digit phone number is required!"
+            });
+        }
+        
+        const passwordBcrypt = await bcrypt.hash(password, 12);
+
+        const result = await pool.query(
+            `INSERT INTO users (name, phone_number, email, password)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id, name, phone_number, email`,
+            [name, phone_number, email, passwordBcrypt]
+        );
+
+        const user = result.rows[0];
+
+        const token = jwt.sign({ userId: user.id }, JWT_SECRET)
+
+        res.status(200).json({ token, user });
+    } catch (error) {
+        console.error('Error with signup!', error);
+        res.status(500).json({ error: 'Error! Could not signup user.' });
+    }
 });
 
 router.get('/me', async(req, res) => {
@@ -60,3 +98,5 @@ router.put('/me', async(req, res) => {
 router.delete('/me', async(req, res) => {
 
 });
+
+export default router;
