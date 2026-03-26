@@ -105,8 +105,48 @@ router.get('/me', authMiddleware, async(req, res) => {
     }
 });
 
-router.put('/me', async(req, res) => {
+// User should have the ability to change their password
+router.put('/me', authMiddleware, async(req, res) => {
+    try {
+        const userId = req.userId;
+        const { name, email, phone_number } = req.body; // password
 
+        if (userId === null) {
+            return res.status(401).json({
+                error: 'Unauthenticated user.'
+            });
+        }
+
+        if (!name || !phone_number ) {
+            return res.status(400).json({
+                error: "A name and phone number is required!"
+            });
+        };
+
+        if(Number.isNaN(Number(phone_number)) === NaN || phone_number.length !== 11) {
+            return res.status(400).json({
+                error: "A valid phone number with 11 digits is required."
+            });
+        };
+
+        if (!email.includes('@')) {
+            return res.status(400).json({
+                error: "A valid email is required!"
+            });
+        }
+
+        const result = await pool.query(
+            `UPDATE users 
+            SET name = $1, email = $2, phone_number = $3
+            WHERE id = $4
+            RETURNING *`,
+            [name, email, phone_number, userId]
+        );
+        res.status(200).json({ message: `Data for user: ${name}, has been updated.`});
+    } catch (error) {
+        console.error('Error with editing this user.', error.message);
+        res.status(500).json({ error: 'Error! Could not edit this user.' });
+    }
 });
 
 router.delete('/me', async(req, res) => {
