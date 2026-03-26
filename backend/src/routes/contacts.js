@@ -199,8 +199,37 @@ router.patch('/:id', authMiddleware, async (req, res) => {
     }
 });
 
-router.delete('/:id', async(req, res) => {
+router.delete('/:id', authMiddleware, async(req, res) => {
+    try {
+        const userId = req.userId;
+        const { id } = req.params;
 
+        if (userId === null) {
+            return res.status(401).json({
+                error: 'Unauthenticated user.'
+            });
+        } else if (id === null) {
+            return res.status(400).json({
+                error: 'Could not find individual contact.'
+            });
+        }
+
+        const result = await pool.query(
+            `DELETE FROM contacts WHERE user_id = $1 AND id = $2 RETURNING *`,
+            [userId, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(400).json({
+                error: 'Error! Contact does not exist.'
+            });
+        }
+
+        res.status(200).json({ message: `The contact: ${result.rows[0].name}, has been deleted.`});
+    } catch (error) {
+        console.error('Error with deleting this contact.', error.message);
+        res.status(500).json({ error: 'Error! Could not delete this contact.' });
+    }
 });
 
 export default router;
