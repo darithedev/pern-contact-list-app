@@ -113,8 +113,52 @@ router.get('/:id', authMiddleware, async(req, res) => {
     }
 });
 
-router.put('/:id', async(req, res) => {
+router.put('/:id', authMiddleware, async(req, res) => {
+    try {
+        const userId = req.userId;
+        const { id } = req.params;
+        const { name, email, phone_number, address, birthday, notes } = req.body;
 
+        if (userId === null) {
+            return res.status(401).json({
+                error: 'Unauthenticated user.'
+            });
+        } else if (id === null) {
+            return res.status(400).json({
+                error: 'Could not find individual contact.'
+            });
+        }
+
+        if (!name || !phone_number) {
+            return res.status(400).json({
+                error: "A name and phone number is required!"
+            });
+        };
+
+        if(Number.isNaN(Number(phone_number)) === NaN || phone_number.length !== 11) {
+            return res.status(400).json({
+                error: "A valid phone number with 11 digits is required."
+            });
+        };
+
+        if (!email.includes('@')) {
+            return res.status(400).json({
+                error: "A valid email is required!"
+            });
+        }
+
+        const result = await pool.query(
+            `UPDATE contacts 
+            SET name = $1, email = $2, phone_number = $3, address = $4, birthday = $5, notes = $6
+            WHERE user_id = $7 AND id = $8
+            RETURNING *`,
+            [name, email, phone_number, address, birthday, notes, userId, id]
+        );
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error with editing this contact.', error.message);
+        res.status(500).json({ error: 'Error! Could not edit this contact.' });
+    }
 });
 
 router.patch('/:id', async (req, res) => {
