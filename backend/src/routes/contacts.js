@@ -161,8 +161,41 @@ router.put('/:id', authMiddleware, async(req, res) => {
     }
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { id } = req.params;
+        const { is_favorite } = req.body;
 
+        if (userId === null) {
+            return res.status(401).json({
+                error: 'Unauthenticated user.'
+            });
+        } else if (id === null) {
+            return res.status(400).json({
+                error: 'Could not find individual contact.'
+            });
+        }
+
+        const result = await pool.query(
+            `UPDATE contacts 
+            SET is_favorite = $1
+            WHERE user_id = $2 AND id = $3
+            RETURNING *`,
+            [is_favorite, userId, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(400).json({
+                error: 'Error! Contact does not exist.'
+            });
+        }
+
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error with updating favorite for this contact.', error.message);
+        res.status(500).json({ error: 'Error! Could not update favorite for this contact.' });
+    }
 });
 
 router.delete('/:id', async(req, res) => {
