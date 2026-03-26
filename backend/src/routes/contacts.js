@@ -22,7 +22,8 @@ router.get('/', authMiddleware, async(req, res) => {
                 contacts.phone_number, 
                 contacts.address, 
                 contacts.birthday, 
-                contacts.notes, 
+                contacts.notes,
+                contacts.is_favorite, 
                 users.name 
                 AS owned_by
             FROM contacts
