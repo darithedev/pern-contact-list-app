@@ -165,7 +165,7 @@ router.delete('/me', authMiddleware, async(req, res) => {
         );
 
         if (result.rows.length === 0) {
-            return res.status(400).json({
+            return res.status(404).json({
                 error: 'Error! User does not exist.'
             });
         }
