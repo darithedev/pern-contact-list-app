@@ -149,8 +149,32 @@ router.put('/me', authMiddleware, async(req, res) => {
     }
 });
 
-router.delete('/me', async(req, res) => {
+router.delete('/me', authMiddleware, async(req, res) => {
+    try {
+        const userId = req.userId;
 
+        if (userId === null) {
+            return res.status(401).json({
+                error: 'Unauthenticated user.'
+            });
+        }
+
+        const result = await pool.query(
+            `DELETE FROM users WHERE id = $1 RETURNING *`,
+            [userId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(400).json({
+                error: 'Error! User does not exist.'
+            });
+        }
+
+        res.status(200).json({ message: `The User: ${result.rows[0].name}, has been deleted.`});
+    } catch (error) {
+        console.error('Error with deleting this user.', error.message);
+        res.status(500).json({ error: 'Error! Could not delete this user.' });
+    }
 });
 
 export default router;
