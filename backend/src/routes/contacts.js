@@ -86,8 +86,8 @@ router.get('/:id', authMiddleware, async(req, res) => {
         const { id } = req.params;
 
         if (userId === null) {
-            return res.status(400).json({
-                error: 'Could not find user.'
+            return res.status(401).json({
+                error: 'Unauthenticated user.'
             });
         } else if (id === null) {
             return res.status(400).json({
