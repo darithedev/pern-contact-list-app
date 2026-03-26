@@ -2,6 +2,7 @@ import express from 'express';
 import pool from '../db/pools.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import authMiddleware from '../helpers/authMiddleware.js';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -87,8 +88,21 @@ router.post('/signup', async(req, res) => {
     }
 });
 
-router.get('/me', async(req, res) => {
+router.get('/me', authMiddleware, async(req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT id, name, phone_number, email FROM users WHERE id = $1`,
+            [req.userId]
+        );
 
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'User could not be found.' });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error! Could not get user.');
+        res.status(500).json({ error: 'Error! Could not get user.' });
+    }
 });
 
 router.put('/me', async(req, res) => {
