@@ -4,9 +4,16 @@ import authMiddleware from '../helpers/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', async(req, res) => {
+router.get('/', authMiddleware, async(req, res) => {
     try {
-        const { id } = req.query;
+        const userId = req.userId;
+
+        if (userId === null) {
+            return res.status(401).json({
+                error: 'Unauthenticated user.'
+            });
+        }
+        
         const result = await pool.query(
             //`SELECT * FROM contacts WHERE id = $1`,
             `SELECT contacts.id, 
@@ -21,7 +28,7 @@ router.get('/', async(req, res) => {
             FROM contacts
             JOIN users ON contacts.user_id = users.id
             WHERE users.id = $1;`,
-            [id]
+            [userId]
         );
         res.status(200).json(result.rows);
     } catch(error) {
