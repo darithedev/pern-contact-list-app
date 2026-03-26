@@ -103,7 +103,7 @@ router.get('/:id', authMiddleware, async(req, res) => {
 
         if (result.rows.length === 0) {
             return res.status(400).json({
-                error: 'Error! User does not exist.'
+                error: 'Error! Contact does not exist.'
             });
         }
 
