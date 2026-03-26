@@ -13,7 +13,7 @@ router.get('/', authMiddleware, async(req, res) => {
                 error: 'Unauthenticated user.'
             });
         }
-        
+
         const result = await pool.query(
             //`SELECT * FROM contacts WHERE id = $1`,
             `SELECT contacts.id, 
@@ -80,8 +80,37 @@ router.post('/', authMiddleware, async(req, res) => {
     }
 });
 
-router.get('/:id', async(req, res) => {
+router.get('/:id', authMiddleware, async(req, res) => {
+    try {
+        const userId = req.userId;
+        const { id } = req.params;
 
+        if (userId === null) {
+            return res.status(400).json({
+                error: 'Could not find user.'
+            });
+        } else if (id === null) {
+            return res.status(400).json({
+                error: 'Could not find individual contact.'
+            })
+        }
+
+        const result = await pool.query(`
+            SELECT * FROM contacts WHERE id = $1 AND user_id = $2`,
+            [id, userId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(400).json({
+                error: 'Error! User does not exist.'
+            });
+        }
+
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error with getting individual contact.', error);
+        res.status(500).json({ error: 'Error! Could not get individual contact.' });
+    }
 });
 
 router.put('/:id', async(req, res) => {
