@@ -79,7 +79,7 @@ router.post('/signup', async(req, res) => {
 
         const user = result.rows[0];
 
-        const token = jwt.sign({ userId: user.id }, JWT_SECRET)
+        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
 
         res.status(200).json({ token, user });
     } catch (error) {
