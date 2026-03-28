@@ -54,8 +54,35 @@ const ContactForm = ({ userId }) => {
         });
     };
 
+    const postContactForm = (newContact) => {
+        return fetch("http://localhost:8080/api/contacts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newContact)
+        })
+        .then((response) => {
+            if (response.ok) {
+                return response.json()
+            } else {
+                console.error('Error with creating new contact.')
+                alert("There was a problem creating your new contact!");
+            }
+        })
+        .then(() => {
+            if (data) {
+                console.log("Contact created successfully.");
+                clearForm();
+            }
+        })
+        .catch(error => {
+            console.error("There was a server error: ", error);
+            alert("Contact was not created! Please try again.")
+        });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        postContactForm(contact);
     }
 
     return (
